@@ -1,0 +1,124 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define MAX_CONTACTS 100
+
+struct Contact {
+    char name[50];
+    char number[15];
+};
+
+struct Contact phonebook[MAX_CONTACTS];
+int contactCount = 0;
+
+void addContact() {
+    if (contactCount >= MAX_CONTACTS) {
+        printf("Phonebook is full. Cannot add more contacts.\n");
+        return;
+    }
+
+    struct Contact newContact;
+    printf("Enter name: ");
+    scanf("%s", newContact.name);
+    printf("Enter number: ");
+    scanf("%s", newContact.number);
+
+    phonebook[contactCount] = newContact;
+    contactCount++;
+    printf("Contact added successfully!\n");
+}
+
+void searchContact(char *searchName) {
+    for (int i = 0; i < contactCount; i++) {
+        if (strcmp(phonebook[i].name, searchName) == 0) {
+            printf("Name: %s\n", phonebook[i].name);
+            printf("Number: %s\n", phonebook[i].number);
+            return;
+        }
+    }
+    printf("Contact not found.\n");
+}
+
+void deleteContact(char *deleteName) {
+    int deleteIndex = -1;
+    for (int i = 0; i < contactCount; i++) {
+        if (strcmp(phonebook[i].name, deleteName) == 0) {
+            deleteIndex = i;
+            break;
+        }
+    }
+
+    if (deleteIndex == -1) {
+        printf("Contact not found.\n");
+        return;
+    }
+
+    for (int i = deleteIndex; i < contactCount - 1; i++) {
+        phonebook[i] = phonebook[i + 1];
+    }
+    contactCount--;
+    printf("Contact deleted successfully!\n");
+}
+
+void displayContacts() {
+    if (contactCount == 0) {
+        printf("No contacts to display.\n");
+        return;
+    }
+
+    printf("Contacts (alphabetically):\n");
+    for (int i = 0; i < contactCount; i++) {
+        printf("Name: %s\n", phonebook[i].name);
+        printf("Number: %s\n", phonebook[i].number);
+    }
+}
+
+int compareContacts(const void *a, const void *b) {
+    return strcmp(((struct Contact *)a)->name, ((struct Contact *)b)->name);
+}
+
+int main() {
+    int choice;
+    char searchName[50];
+    char deleteName[50];
+
+    while (1) {
+        printf("Phonebook Application\n");
+        printf("1. Add Contact\n");
+        printf("2. Search Contact\n");
+        printf("3. Delete Contact\n");
+        printf("4. Display All Contacts \n");
+        printf("5. Exit\n");
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 1:
+                addContact();
+                break;
+            case 2:
+                printf("Enter name to search: ");
+                scanf("%s", searchName);
+                searchContact(searchName);
+                break;
+            case 3:
+                printf("Enter name to delete: ");
+                scanf("%s", deleteName);
+                deleteContact(deleteName);
+                break;
+            case 4:
+                qsort(phonebook, contactCount, sizeof(struct Contact), compareContacts);
+                displayContacts();
+                break;
+            case 5:
+                printf("Exiting...\n");
+                exit(0);
+            default:
+                printf("Invalid choice. Please select a valid option.\n");
+        }
+    }
+
+    return 0;
+}
+
